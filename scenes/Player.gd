@@ -12,18 +12,12 @@ func _ready():
 	pass
 
 
-"""
-A process that is applied every frame in the engine loop.
-Delta is num secs since last frame has passed. 
-"""
 func _process(delta):
-	# ########
-	# Movement
-	var move_vector = Vector2(0, 0)
-	# set move vector on a scale of 0-1 for "strength" of input, can be used for analogue inputs
-	move_vector.x = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
-	# set player jump if button is pressed
-	move_vector.y = -1 if Input.is_action_just_pressed("jump") else 0
+	"""
+	A process that is applied every frame in the engine loop.
+	Delta is num secs since last frame has passed. 
+	"""
+	var move_vector = get_movement_vector()
 	
 	# set player run speed
 	# set acceleration for player run in velocity.x
@@ -65,3 +59,14 @@ func _process(delta):
 	# we set velocity state to processing output to set velocity to 0 on collision
 	# also set the up directon so the method can determine jump directon
 	velocity = move_and_slide(velocity, Vector2.UP)
+
+
+func get_movement_vector():
+	# Movement
+	var move_vector = Vector2(0, 0)
+	# set move vector on a scale of 0-1 for "strength" of input, can be used for analogue inputs
+	move_vector.x = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
+	# set player jump if button is pressed
+	move_vector.y = -1 if Input.is_action_just_pressed("jump") else 0
+	
+	return move_vector
