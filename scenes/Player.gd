@@ -30,7 +30,7 @@ func _process(delta):
 		# different frame-rates affect gameply, so math is needed to develop
 		# a framerate independent lerp
 		# so not: velocity.x = lerp(velocity.x, 0, .1)
-		velocity.x = lerp(0, velocity.x, pow(2, -50) * delta)
+		velocity.x = lerp(0, velocity.x, pow(2, -50 * delta))
 		
 	
 	# set the speed limit of the character
