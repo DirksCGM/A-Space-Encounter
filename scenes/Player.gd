@@ -7,6 +7,7 @@ var max_hz_speed = 125
 var hz_acceleration = 2000
 var jump_speed = 360
 var jump_termination_multiplier = 3
+var has_double_jump = false
 
 func _ready():
 	pass
@@ -38,9 +39,15 @@ func _process(delta):
 	
 	# determine jump mechanics
 	# if jump nutton is pressed, allow jump and only if player is on the floor
-	# also allow jump during coyote timer period
-	if move_vector.y < 0 && (is_on_floor() || !$CoyoteTimer.is_stopped()):
+	# also allow jump during coyote timer period, along with double jump
+	if move_vector.y < 0 && (is_on_floor() || !$CoyoteTimer.is_stopped() || has_double_jump):
 		velocity.y = move_vector.y * jump_speed
+		
+		# double jump off when busy jumping an double jump was used
+		if !is_on_floor() && $CoyoteTimer.is_stopped():
+			has_double_jump = false
+		
+		$CoyoteTimer.stop()
 	
 	
 	# ###################
@@ -75,6 +82,11 @@ func _process(delta):
 	# run coyote timer at appropriate time
 	if was_on_floor && !is_on_floor():
 		$CoyoteTimer.start()
+		
+	# double jump functionality
+	if is_on_floor():
+		has_double_jump = true
+		
 	
 	# ################
 	# Player Animation
