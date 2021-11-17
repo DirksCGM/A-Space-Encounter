@@ -44,7 +44,6 @@ func _process(delta):
 	
 	# ###################
 	# Environment Gravity
-	
 	# jump variablitly by manipulating gravity
 	# this means if the player jumps, they can controll the strenght of
 	# the jump based on how the jump key is pressed
@@ -59,6 +58,10 @@ func _process(delta):
 	# we set velocity state to processing output to set velocity to 0 on collision
 	# also set the up directon so the method can determine jump directon
 	velocity = move_and_slide(velocity, Vector2.UP)
+	
+	# ################
+	# Player Animation
+	update_anmiation()
 
 
 func get_movement_vector():
@@ -70,3 +73,24 @@ func get_movement_vector():
 	move_vector.y = -1 if Input.is_action_just_pressed("jump") else 0
 	
 	return move_vector
+
+
+func update_anmiation():
+	"""
+	Takes current movement state and velocity of the player
+	and applies the relevant animations to the player sprite.
+	"""
+	var movement_vector = get_movement_vector()
+	
+	# is player not on ground
+	if !is_on_floor():
+		$AnimatedSprite.play("jump")
+	# if player is running
+	elif movement_vector.x != 0:
+		$AnimatedSprite.play("run")
+	else:
+		$AnimatedSprite.play("idle")
+	
+	# flip sprite based on movement only when input is given
+	if movement_vector.x != 0:
+		$AnimatedSprite.flip_h = true if movement_vector.x > 0 else false
