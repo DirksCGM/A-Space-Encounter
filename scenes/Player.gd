@@ -38,7 +38,8 @@ func _process(delta):
 	
 	# determine jump mechanics
 	# if jump nutton is pressed, allow jump and only if player is on the floor
-	if move_vector.y < 0 && is_on_floor():
+	# also allow jump during coyote timer period
+	if move_vector.y < 0 && (is_on_floor() || !$CoyoteTimer.is_stopped()):
 		velocity.y = move_vector.y * jump_speed
 	
 	
@@ -52,12 +53,28 @@ func _process(delta):
 	else:
 		# increase y-velocity of player by the defined gravity 
 		velocity.y += gravity * delta
-	
+
+	"""
+	*CoyoteTimer*
+	This is a time period after a plaer falls off of a platform
+	where they are technically not touching the ground where the
+	player can still execute a jump.
+	This is used to handle the jarring experience of the inability
+	to jump when one falls of a platform, making the game experience
+	a lot smoother for the player.
+	ie. if a player runs of a platform, they have a split second where
+	they can still jump.
+	"""
+	var was_on_floor = is_on_floor()
 	# move player based on defined player velocity
 	# this method returns a velocity after collision processing that we can use 
 	# we set velocity state to processing output to set velocity to 0 on collision
 	# also set the up directon so the method can determine jump directon
 	velocity = move_and_slide(velocity, Vector2.UP)
+	
+	# run coyote timer at appropriate time
+	if was_on_floor && !is_on_floor():
+		$CoyoteTimer.start()
 	
 	# ################
 	# Player Animation
