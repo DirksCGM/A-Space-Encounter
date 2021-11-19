@@ -1,6 +1,8 @@
 # Player
 extends KinematicBody2D
 
+signal died
+
 var gravity = 1000
 var velocity = Vector2(0, 0)
 var max_hz_speed = 125
@@ -10,7 +12,8 @@ var jump_termination_multiplier = 3
 var has_double_jump = false
 
 func _ready():
-	pass
+	# Hurt player on hazard area entered
+	$HazardArea.connect("area_entered", self, "on_hazard_area_entered")
 
 
 func _process(delta):
@@ -123,3 +126,12 @@ func update_anmiation():
 	# flip sprite based on movement only when input is given
 	if movement_vector.x != 0:
 		$AnimatedSprite.flip_h = true if movement_vector.x > 0 else false
+
+
+func on_hazard_area_entered(area2d):
+	"""
+	When the player enteres a hazard area, they must emit a die signal
+	that will makr them as dead.
+	"""
+	emit_signal("died")
+	print("die")
