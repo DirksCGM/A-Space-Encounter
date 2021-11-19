@@ -33,5 +33,6 @@ func get_target_position():
 	
 	# only check global position if the player exists
 	if players.size() > 0:
+		print("player found, camera resetting")
 		var player = players[0]
 		target_position = player.global_position
