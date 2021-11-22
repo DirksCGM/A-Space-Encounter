@@ -33,7 +33,7 @@ texture={
 "compress/normal_map": 0,
 "detect_3d": false,
 "flags/anisotropic": false,
-"flags/filter": true,
+"flags/filter": false,
 "flags/mipmaps": false,
 "flags/repeat": 0,
 "flags/srgb": 2,
@@ -70,6 +70,7 @@ jump={
 
 [layer_names]
 
+2d_physics/layer_18="ENEMY_GOAL"
 2d_physics/layer_19="HAZARD"
 2d_physics/layer_20="PICKUP"
 
