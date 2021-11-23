@@ -3,13 +3,19 @@ extends KinematicBody2D
 
 signal died
 
+enum State {NORMAL, DASHING}
+
 var gravity = 1000
 var velocity = Vector2(0, 0)
 var max_hz_speed = 125
+var max_dash_speed = 500
+var min_dash_speed = 200
 var hz_acceleration = 2000
 var jump_speed = 360
 var jump_termination_multiplier = 3
 var has_double_jump = false
+var current_state = State.NORMAL
+var is_state_new = true
 
 func _ready():
 	# Hurt player on hazard area entered
@@ -21,6 +27,29 @@ func _process(delta):
 	A process that is applied every frame in the engine loop.
 	Delta is num secs since last frame has passed. 
 	"""
+	# switch statement for the player dash/normal state
+	match current_state:
+		State.NORMAL:
+			process_normal(delta)
+		State.DASHING:
+			process_dashing(delta)
+	
+	is_state_new = false
+
+
+func change_state(new_state):
+	"""
+	Handles the state change for player normal and dashing mechanic.
+	"""
+	current_state = new_state
+	is_state_new = true
+
+
+func process_normal(delta):
+	"""
+	Normal player movement processing
+	"""
+	
 	var move_vector = get_movement_vector()
 	
 	# set player run speed
@@ -52,7 +81,6 @@ func _process(delta):
 		
 		$CoyoteTimer.stop()
 	
-	
 	# ###################
 	# Environment Gravity
 	# jump variablitly by manipulating gravity
@@ -81,19 +109,46 @@ func _process(delta):
 	# we set velocity state to processing output to set velocity to 0 on collision
 	# also set the up directon so the method can determine jump directon
 	velocity = move_and_slide(velocity, Vector2.UP)
-	
+
 	# run coyote timer at appropriate time
 	if was_on_floor && !is_on_floor():
 		$CoyoteTimer.start()
-		
+
 	# double jump functionality
 	if is_on_floor():
 		has_double_jump = true
-		
-	
-	# ################
-	# Player Animation
+
+	# dash if dash button is pressed
+	if Input.is_action_just_pressed("dash"):
+		print("dashing")
+		call_deferred("change_state", State.DASHING)
+
 	update_anmiation()
+
+
+func process_dashing(delta):
+	"""
+	Dashing player movement processing
+	"""
+	# only set velocity on first frame and decay dash
+	if is_state_new:
+		$AnimatedSprite.play("jump")
+		var velocity_mod = 1
+		var move_vector = get_movement_vector()
+		
+		# dash in the current direction of the player
+		if velocity.x != 0:
+			velocity_mod = sign(move_vector.x)
+		else:
+			velocity_mod = 1 if $AnimatedSprite.flip_h else -1
+			
+		velocity = Vector2(max_dash_speed * velocity_mod, 0)
+
+	velocity = move_and_slide(velocity, Vector2.UP)
+	velocity.x = lerp(0, velocity.x, pow(2, -8 * delta))
+	
+	if abs(velocity.x) < min_dash_speed:
+		call_deferred("change_state", State.NORMAL)
 
 
 func get_movement_vector():
@@ -134,4 +189,3 @@ func on_hazard_area_entered(area2d):
 	that will makr them as dead.
 	"""
 	emit_signal("died")
-	print("die")
