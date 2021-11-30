@@ -9,9 +9,12 @@ var max_speed = 25
 var velocity = Vector2.ZERO
 var direction = Vector2.ZERO
 
+
 func _ready():
 	direction = Vector2.RIGHT if start_direction == Direction.RIGHT else Vector2.LEFT
 	$GoalDetector.connect("area_entered", self, "goal_entered")
+	$HitBoxArea.connect("area_entered", self, "hitbox_entered")
+
 
 func _process(delta):
 	"""
@@ -27,6 +30,10 @@ func _process(delta):
 	
 	# flip animated sprite
 	$AnimatedSprite.flip_h = true if direction.x > 0 else false
+
+
+func hitbox_entered(_area2d):
+	queue_free()
 
 
 func goal_entered(_area2d):

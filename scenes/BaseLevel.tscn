@@ -31,7 +31,7 @@ position = Vector2( -63, 18 )
 start_direction = 0
 
 [node name="EnemyGoal" parent="." instance=ExtResource( 3 )]
-position = Vector2( 41, 36 )
+position = Vector2( 44, 36 )
 
 [node name="EnemyGoal2" parent="." instance=ExtResource( 3 )]
-position = Vector2( -32, 36 )
+position = Vector2( -35, 36 )

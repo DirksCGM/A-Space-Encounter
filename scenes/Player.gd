@@ -5,6 +5,8 @@ signal died
 
 enum State {NORMAL, DASHING}
 
+export(int, LAYERS_2D_PHYSICS) var dash_hazard_mask
+
 var gravity = 1000
 var velocity = Vector2(0, 0)
 var max_hz_speed = 125
@@ -17,9 +19,13 @@ var has_double_jump = false
 var current_state = State.NORMAL
 var is_state_new = true
 
+var default_hazard_mask = 0
+
+
 func _ready():
 	# Hurt player on hazard area entered
 	$HazardArea.connect("area_entered", self, "on_hazard_area_entered")
+	default_hazard_mask = $HazardArea.collision_mask
 
 
 func _process(delta):
@@ -49,6 +55,10 @@ func process_normal(delta):
 	"""
 	Normal player movement processing
 	"""
+	# disable dash for killing enemies
+	if is_state_new:
+		$DashArea/CollisionShape2D.disabled = true
+		$HazardArea.collision_mask = default_hazard_mask
 	
 	var move_vector = get_movement_vector()
 	
@@ -132,7 +142,9 @@ func process_dashing(delta):
 	"""
 	# only set velocity on first frame and decay dash
 	if is_state_new:
+		$DashArea/CollisionShape2D.disabled = false # enable dash for killing enemies
 		$AnimatedSprite.play("jump")
+		$HazardArea.collision_mask = dash_hazard_mask
 		var velocity_mod = 1
 		var move_vector = get_movement_vector()
 		
