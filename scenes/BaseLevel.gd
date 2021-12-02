@@ -7,14 +7,33 @@ So the level scens that sit above all the mechanics are the ones that manage
 player spawn location, death, last known location and so on.
 """
 
+signal coin_total_change
+
 var player_scene = preload("res://scenes/Player.tscn") # gets players scene in memory
 var spawn_position = Vector2.ZERO
 var current_player_node = null # keep player node in memory
+var total_coins = 0
+var collected_coins = 0
 
 func _ready():
 	spawn_position = $Player.global_position # start player where they were configured
 	register_player($Player)
+	coin_total_change(get_tree().get_nodes_in_group("coin").size()) # get total coin nodes in group
 	
+func coin_collected():
+	"""
+	Simple coin counter for the player.
+	"""
+	collected_coins += 1
+	emit_signal("coin_total_change", total_coins, collected_coins)
+
+func coin_total_change(new_total):
+	"""
+	Simple coin updater for the player.
+	"""
+	total_coins = new_total
+	emit_signal("coin_total_change", total_coins, collected_coins)
+
 func register_player(player):
 	"""
 	Listen to players death and add signal connection.

@@ -53,8 +53,8 @@ position = Vector2( 0, 3.5 )
 shape = SubResource( 4 )
 
 [node name="PickupArea" type="Area2D" parent="."]
-collision_layer = 32768
-collision_mask = 32768
+collision_layer = 524288
+collision_mask = 524288
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PickupArea"]
 position = Vector2( 0, -12 )
