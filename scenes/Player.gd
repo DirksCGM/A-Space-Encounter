@@ -13,9 +13,10 @@ var max_hz_speed = 125
 var max_dash_speed = 500
 var min_dash_speed = 200
 var hz_acceleration = 2000
-var jump_speed = 360
+var jump_speed = 330
 var jump_termination_multiplier = 3
 var has_double_jump = false
+var has_dash = false
 var current_state = State.NORMAL
 var is_state_new = true
 
@@ -127,12 +128,13 @@ func process_normal(delta):
 	# double jump functionality
 	if is_on_floor():
 		has_double_jump = true
+		has_dash = true
 
 	# dash if dash button is pressed
-	if Input.is_action_just_pressed("dash"):
-		print("dashing")
+	if has_dash and Input.is_action_just_pressed("dash"):
 		call_deferred("change_state", State.DASHING)
-
+		has_dash = false
+		
 	update_anmiation()
 
 
